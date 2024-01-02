@@ -9,8 +9,8 @@ import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import {FormError} from "@/components/form-error";
 import {FormSuccess} from "@/components/form-success";
-import {login} from "@/actions/login";
 import {useState, useTransition} from "react";
+import {register} from "@/actions/register";
 
 export const RegisterForm = () => {
     const [isPending, startTransition] = useTransition();
@@ -31,17 +31,24 @@ export const RegisterForm = () => {
         setSuccess("");
 
         startTransition(() => {
-            login(values)
+            register(values)
                 .then((data: { message: string, status: number }) => {
 
-                    if (data?.status === 401) {
+                    if (data?.status === 400) {
                         setError(data.message);
                     }
 
                     if (data?.status === 200) {
                         setSuccess(data.message);
+                        form.reset();
                     }
                 })
+                .finally(() => {
+                    setTimeout(() => {
+                        setError("");
+                        setSuccess("");
+                    }, 5000);
+                });
         });
     }
 
